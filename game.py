@@ -1,14 +1,13 @@
 import pygame
 from board import *
 
-# Initialize the game and needed objects
+# Initialize the game
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption('Chess')
 
-# bishop = pygame.image.load('images/bishop_white.png')
-# bishop = pygame.transform.scale(bishop, (100, 100))
-# queen = pygame.image.load('images/queen_white.png')
+# Initialize needed objects
+
 
 # Main game loop
 running = True
@@ -23,16 +22,8 @@ while running:
     squares = board.build_square_objects(screen)
     board.print_squares(squares)
 
+    # Place pieces
+
     # Game logic
-    # screen.fill((38, 41, 64))
 
-
-    # screen.blit(bishop, (10, 10))
-    # screen.blit(queen, (200, 200))
-    
     pygame.display.update()
-
-
-
-# pygame.draw.rect(screen, square.color, square.pos_size)
-# pygame.display.update()
