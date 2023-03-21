@@ -3,16 +3,16 @@ from piece import Piece
 
 # Import needed objects
 surface_w = pygame.transform.scale(
-    pygame.image.load('images/bishop_white.png'), 
+    pygame.image.load('images/king_white.png'), 
     (100, 100)
 )
 surface_b = pygame.transform.scale(
-    pygame.image.load('images/bishop_black.png'), 
+    pygame.image.load('images/king_black.png'), 
     (100, 100)
 )
 
-class Bishop(Piece):
-    """A class representing a bishop."""
+class King(Piece):
+    """A class representing a king."""
 
     def __init__(self, x_coor, y_coor, color):
         super().__init__(x_coor, y_coor, color)

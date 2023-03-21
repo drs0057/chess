@@ -6,9 +6,6 @@ pygame.init()
 screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption('Chess')
 
-# Initialize needed objects
-
-
 # Main game loop
 running = True
 while running:
@@ -19,11 +16,10 @@ while running:
 
     # Build the board
     board = Board()
-    squares = board.build_square_objects(screen)
-    board.print_squares(squares)
-
-    # Place pieces
+    squares = board.square_objects(screen)
+    board.initial_setup(squares)
 
     # Game logic
 
+    # Update the screen
     pygame.display.update()
