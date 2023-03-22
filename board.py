@@ -16,22 +16,17 @@ class Square:
     """A class representing each square."""
 
     def __init__(self, x_coor, y_coor, screen):
-
-        # Denotes coordinates of the square (0 - 7 in both dimentions)
         self.x_coor = x_coor
         self.y_coor = y_coor
-        # Absolute positions of the top-left corner of the square
         self.x_abs = x_coor * width + x_offset
         self.y_abs = y_coor * height + y_offset
-        # Define color
         self.color = light if (self.x_coor + self.y_coor) % 2 == 0 else dark
-        # Screen to draw the square on
         self.screen = screen
         self.rect = pygame.Rect(self.x_abs, self.y_abs, width, height)
         self.occupying_piece = None
         self.is_selected = False
 
-    # Method to draw individual square
+
     def draw(self):
         """Draws a square on the board and the potential piece occupying it."""
 
@@ -51,8 +46,6 @@ class Board:
     """A class representing the board as a whole."""
 
     def __init__(self, screen):
-
-        # Initialize state of the board's pieces
         self.init_state = initial_state
         self.squares = None
         self.build_square_objects(screen)
@@ -61,6 +54,7 @@ class Board:
 
     def build_square_objects(self, screen):
         """Assigns an attribute; a 2D list of all 64 square objects."""
+
         squares = []
         for y_coor in range(8):
             row = []
@@ -69,9 +63,11 @@ class Board:
             squares.append(row)
         self.squares = squares
     
+
     def initial_setup(self):
         """Draws squares and places the pieces in their starting positions.
-        Also writes coordinate labels."""
+        Also writes needed text."""
+
         for y_coor, row in enumerate(self.init_state):
             for x_coor, piece in enumerate(row):
                 
@@ -148,6 +144,7 @@ class Board:
             square.is_selected = True
             self.board_square_selected = True
 
+
     def find_selected_square(self):
         """Returns the square object that is currently selected."""
 
@@ -156,10 +153,10 @@ class Board:
                 if square.is_selected:
                     return square
 
+
     def click(self, x_abs, y_abs):
         """Handles any click event that is detected."""
 
-        # Gather the clicked square object
         clicked_square = self.get_square_from_coor(x_abs, y_abs)
 
         # Situation 1: No square is currently selected
@@ -175,6 +172,7 @@ class Board:
 
             # Move the current piece to the target square
             self.move_piece(current_square, clicked_square)
+
 
     def move_piece(self, current_square, target_square):
         """Takes in the current square and the target square objects, 
