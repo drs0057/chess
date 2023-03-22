@@ -1,14 +1,15 @@
 import pygame
 from piece import Piece
+from variables import *
 
 # Import needed objects
 surface_w = pygame.transform.scale(
     pygame.image.load('images/knight_white.png'), 
-    (100, 100)
+    (width, height)
 )
 surface_b = pygame.transform.scale(
     pygame.image.load('images/knight_black.png'), 
-    (100, 100)
+    (width, height)
 )
 
 class Knight(Piece):

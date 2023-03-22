@@ -3,7 +3,8 @@ from board import *
 
 # Initialize the game
 pygame.init()
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((screen_width, screen_height))
+screen.fill(background)
 pygame.display.set_caption('Chess')
 
 # Build the board

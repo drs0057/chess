@@ -1,4 +1,5 @@
 import pygame
+from variables import *
 from rook import Rook
 from knight import Knight
 from bishop import Bishop
@@ -11,10 +12,6 @@ from pawn import Pawn
 # pygame.draw.rect() parameters: (surface to draw on, color, object to draw)
 
 
-# Intialize variables
-light, dark = (237, 199, 190), (115, 88, 81)
-width, height = 100, 100
-
 class Square:
     """A class representing each square."""
 
@@ -24,8 +21,8 @@ class Square:
         self.x_coor = x_coor
         self.y_coor = y_coor
         # Absolute positions of the top-left corner of the square
-        self.x_abs = x_coor * width
-        self.y_abs = y_coor * height
+        self.x_abs = x_coor * width + x_offset
+        self.y_abs = y_coor * height + y_offset
         # Define color
         self.color = light if (self.x_coor + self.y_coor) % 2 == 0 else dark
         # Screen to draw the square on
@@ -69,8 +66,8 @@ class Board:
 
         self.squares = None
         self.build_square_objects(screen)
-        # Store if a square is currently selected
         self.board_square_selected = False
+        self.screen = screen
 
     def build_square_objects(self, screen):
         """Assigns an attribute; a 2D list of all 64 square objects."""
@@ -83,7 +80,8 @@ class Board:
         self.squares = squares
     
     def initial_setup(self):
-        """Draws squares and places the pieces in their starting positions."""
+        """Draws squares and places the pieces in their starting positions.
+        Also writes coordinate labels."""
         for y_coor, row in enumerate(self.init_state):
             for x_coor, piece in enumerate(row):
                 
@@ -128,13 +126,15 @@ class Board:
             for square in row:
                 square.draw()
 
+        self.write_all()
+
     def get_square_from_coor(self, x_abs, y_abs):
         """Take absolute x and y position, returns corresponding square 
         object."""
 
         # Determine which square was clicked
-        x_coor = x_abs // 100
-        y_coor = y_abs // 100
+        x_coor = int((x_abs - x_offset) // width)
+        y_coor = int((y_abs - y_offset) // height)
         square = self.squares[y_coor][x_coor]
         return square
 
@@ -198,3 +198,33 @@ class Board:
         # Deselect the previous square
         current_square.is_selected = False
         self.board_square_selected = False
+
+
+    def write_all(self):
+        """A function to write all coordinate labels and player names."""
+
+        # Write coordinates
+        font = pygame.font.Font(None, 36)
+        for x_coor in range(8):
+            self.screen.blit(
+                (font.render(x_labels[x_coor], True, (0, 0, 0))), 
+                ((x_coor * width) + x_offset + width/2 - 5, y_offset + height*8 + 3)
+            )
+
+        for y_coor in range(8):
+            self.screen.blit(
+                (font.render(y_labels[y_coor], True, (0, 0, 0))), 
+                (x_offset - 20, y_coor * height + y_offset + height/2 - 8)
+            )
+        
+        self.screen.blit(
+            font.render("Player 2", True, (0, 0, 0)),
+            (x_offset, y_offset - 30)
+        )
+
+        self.screen.blit(
+            font.render("Player 1", True, (0, 0, 0)),
+            (x_offset, y_offset + height*8 + 35)
+        )
+
+            
