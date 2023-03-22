@@ -9,3 +9,13 @@ x_offset = (screen_width - (width * 8)) / 2
 y_offset = (screen_height - (height * 8)) / 2
 x_labels = ['a','b','c','d','e','f','g','h']
 y_labels = ['1','2','3','4','5','6','7','8']
+initial_state = [
+    ['bR', 'bK', 'bB', 'bQ', 'bG', 'bB', 'bK', 'bR'],
+    ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+    ['wR', 'wK', 'wB', 'wQ', 'wG', 'wB', 'wK', 'wR']
+]

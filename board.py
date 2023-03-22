@@ -52,18 +52,8 @@ class Board:
 
     def __init__(self, screen):
 
-        # Initial state of the board's pieces; one list for each row
-        self.init_state = [
-            ['bR', 'bK', 'bB', 'bQ', 'bG', 'bB', 'bK', 'bR'],
-            ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-            ['wR', 'wK', 'wB', 'wQ', 'wG', 'wB', 'wK', 'wR']
-        ]
-
+        # Initialize state of the board's pieces
+        self.init_state = initial_state
         self.squares = None
         self.build_square_objects(screen)
         self.board_square_selected = False
@@ -132,12 +122,16 @@ class Board:
         """Take absolute x and y position, returns corresponding square 
         object."""
 
-        # Determine which square was clicked
+        # Determine which coordinate was clicked
         x_coor = int((x_abs - x_offset) // width)
         y_coor = int((y_abs - y_offset) // height)
-        square = self.squares[y_coor][x_coor]
-        return square
 
+        if x_coor not in range(8) or y_coor not in range(8):
+            return None
+        else:
+            square = self.squares[y_coor][x_coor]
+            return square
+    
     def select_square(self, square):
         """Takes in a square object. 'Deselects' previous square if there is 
         one, 'selects' square clicked on if a piece occupies it."""
@@ -166,21 +160,21 @@ class Board:
         """Handles any click event that is detected."""
 
         # Gather the clicked square object
-        square = self.get_square_from_coor(x_abs, y_abs)
+        clicked_square = self.get_square_from_coor(x_abs, y_abs)
 
         # Situation 1: No square is currently selected
         # Select the clicked square
-        if self.board_square_selected == False:
-            self.select_square(square)
+        if self.board_square_selected == False and clicked_square != None:
+            self.select_square(clicked_square)
 
         # Situation 2: A square with a piece on it is already selected
-        elif self.board_square_selected == True:
+        elif self.board_square_selected == True and clicked_square != None:
 
             # Find the square that is currently selected
             current_square = self.find_selected_square()
 
             # Move the current piece to the target square
-            self.move_piece(current_square, square)
+            self.move_piece(current_square, clicked_square)
 
     def move_piece(self, current_square, target_square):
         """Takes in the current square and the target square objects, 
@@ -217,6 +211,7 @@ class Board:
                 (x_offset - 20, y_coor * height + y_offset + height/2 - 8)
             )
         
+        # Write player names
         self.screen.blit(
             font.render("Player 2", True, (0, 0, 0)),
             (x_offset, y_offset - 30)
