@@ -2,7 +2,7 @@
 without breaking any files."""
 
 background = (184, 180, 176)
-light, dark = (237, 199, 190), (115, 88, 81)
+light, dark, select_color = (237, 199, 190), (115, 88, 81), (245, 188, 88)
 width, height = 80, 80
 screen_width, screen_height = 750, 800
 x_offset = (screen_width - (width * 8)) / 2

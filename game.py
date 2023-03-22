@@ -19,6 +19,7 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             coor = pygame.mouse.get_pos()
+            
             # Handle any click event
             board.click(coor[0], coor[1])
             

@@ -8,8 +8,11 @@ from king import King
 from pawn import Pawn
 
 # Notes:
+
 # Rect class parameters: (abs. x_coor of top left corner, abs. y_coor of top left corner, width of rect, height of rect)
 # pygame.draw.rect() parameters: (surface to draw on, color, object to draw)
+
+# When square is clicked: ---> click() ---> get_square_from_coor() ---> select_clicked_square() or find_selected_square() ---> move_piece()
 
 
 class Square:
@@ -20,18 +23,19 @@ class Square:
         self.y_coor = y_coor
         self.x_abs = x_coor * width + x_offset
         self.y_abs = y_coor * height + y_offset
-        self.color = light if (self.x_coor + self.y_coor) % 2 == 0 else dark
-        self.screen = screen
-        self.rect = pygame.Rect(self.x_abs, self.y_abs, width, height)
         self.occupying_piece = None
         self.is_selected = False
+        self.color = light if (self.x_coor + self.y_coor) % 2 == 0 else dark
+        self.display_color = self.color
+        self.screen = screen
+        self.rect = pygame.Rect(self.x_abs, self.y_abs, width, height)
 
 
     def draw(self):
         """Draws a square on the board and the potential piece occupying it."""
 
         # Draw the basic square
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        pygame.draw.rect(self.screen, self.display_color, self.rect)
 
         # Draw the piece occupying the square, if there is one
         if self.occupying_piece:
@@ -51,6 +55,7 @@ class Board:
         self.build_square_objects(screen)
         self.board_square_selected = False
         self.screen = screen
+        self.current_player = 'w'
 
     def build_square_objects(self, screen):
         """Assigns an attribute; a 2D list of all 64 square objects."""
@@ -129,29 +134,40 @@ class Board:
             return square
     
     def select_square(self, square):
-        """Takes in a square object. 'Deselects' previous square if there is 
-        one, 'selects' square clicked on if a piece occupies it."""
+        """Takes in a square object. 'Deselects' previous square if 
+        there is one, 'selects' desired square."""
 
         # Deselect previous square selected if there is one
-        for row in self.squares:
-            for prev_square in row:
-                if prev_square.is_selected:
-                    prev_square.is_selected = False
-                    self.board_square_selected = False
+        prev_square = self.find_selected_square()
+        if prev_square:
+            self.deselect_square(prev_square)
     
-        # Only select if there is a piece occupying the square
+        # Check if piece is occupying the square and check for current player
         if square.occupying_piece:
-            square.is_selected = True
-            self.board_square_selected = True
 
+            if self.current_player == 'w':
+                if square.occupying_piece.color == 'w':
+                    square.is_selected = True
+                    square.display_color = select_color
+                    square.draw()
+                    self.board_square_selected = True
+
+            elif self.current_player == 'b':
+                    if square.occupying_piece.color == 'b':
+                        square.is_selected = True
+                        square.display_color = select_color
+                        square.draw()
+                        self.board_square_selected = True
 
     def find_selected_square(self):
-        """Returns the square object that is currently selected."""
+        """Returns the square object that is currently selected, returns
+        none if there isn't one."""
 
         for row in self.squares:
             for square in row:
                 if square.is_selected:
                     return square
+        return None
 
 
     def click(self, x_abs, y_abs):
@@ -159,8 +175,8 @@ class Board:
 
         clicked_square = self.get_square_from_coor(x_abs, y_abs)
 
-        # Situation 1: No square is currently selected
-        # Select the clicked square
+        # Situation 1: No square is currently selected;
+        # select the clicked square
         if self.board_square_selected == False and clicked_square != None:
             self.select_square(clicked_square)
 
@@ -170,9 +186,27 @@ class Board:
             # Find the square that is currently selected
             current_square = self.find_selected_square()
 
-            # Move the current piece to the target square
-            self.move_piece(current_square, clicked_square)
+            # Situation 2a: Move piece to empty square
+            if clicked_square.occupying_piece == None:
+                self.move_piece(current_square, clicked_square)
 
+            # Situation 2b: A piece is on the target square; check legality
+            else:
+                if self.current_player == 'w':
+                    # Move piece
+                    if clicked_square.occupying_piece.color == 'b':
+                        self.move_piece(current_square, clicked_square)
+                    # Deselect
+                    else:
+                        self.deselect_square(current_square)
+
+                elif self.current_player == 'b':
+                    # Move piece
+                    if clicked_square.occupying_piece.color == 'w':
+                        self.move_piece(current_square, clicked_square)
+                    # Deselect
+                    else:
+                       self.deselect_square(current_square)
 
     def move_piece(self, current_square, target_square):
         """Takes in the current square and the target square objects, 
@@ -188,8 +222,10 @@ class Board:
         target_square.draw()
         
         # Deselect the previous square
-        current_square.is_selected = False
-        self.board_square_selected = False
+        self.deselect_square(current_square)
+
+        #Switch players
+        self.current_player = 'b' if self.current_player == 'w' else 'w'
 
 
     def write_all(self):
@@ -219,5 +255,16 @@ class Board:
             font.render("Player 1", True, (0, 0, 0)),
             (x_offset, y_offset + height*8 + 35)
         )
+
+
+    def deselect_square(self, square):
+        """Takes in a square object and 'deselects' it."""
+        
+        square.is_selected = False
+        square.display_color = square.color
+        square.draw()
+        self.board_square_selected = False
+
+        
 
             
