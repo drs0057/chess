@@ -232,7 +232,7 @@ class Board:
         """A function to write all coordinate labels and player names."""
 
         # Write coordinates
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.SysFont("Arial", 28)
         for x_coor in range(8):
             self.screen.blit(
                 (font.render(x_labels[x_coor], True, (0, 0, 0))), 
@@ -246,14 +246,15 @@ class Board:
             )
         
         # Write player names
+        font = pygame.font.SysFont("Arial", 28, bold=True)
         self.screen.blit(
-            font.render("Player 2", True, (0, 0, 0)),
-            (x_offset, y_offset - 30)
+            font.render("Player 2:", True, (0, 0, 0)),
+            (player_2_location)
         )
 
         self.screen.blit(
-            font.render("Player 1", True, (0, 0, 0)),
-            (x_offset, y_offset + height*8 + 35)
+            font.render("Player 1:", True, (0, 0, 0)),
+            (player_1_location)
         )
 
 
@@ -264,6 +265,33 @@ class Board:
         square.display_color = square.color
         square.draw()
         self.board_square_selected = False
+
+
+    def timer(self, time_remaining_ms, screen):
+        """Takes in time remaining, displays a timer for both players."""
+
+        # Format the time
+        minutes = (time_remaining_ms // 1000) // 60
+        seconds = (time_remaining_ms // 1000) % 60
+        time_format = "{:02d}:{:02d}".format(minutes, seconds)
+        font = pygame.font.SysFont("Arial", 30)
+        time_text = font.render(time_format, False, (0, 0, 0))
+
+        # Cover up the last time, then display new time for each player
+        # Player 2
+        cover_up_rect = pygame.Rect(
+            player_2_location[0] + 125, player_2_location[1], 100, 30
+            )
+        pygame.draw.rect(screen, background_color, cover_up_rect)
+        screen.blit(time_text, (player_2_location[0] + 135, player_2_location[1]))
+
+        # Player 1
+        cover_up_rect = pygame.Rect(
+            player_1_location[0] + 125, player_1_location[1], 100, 30
+            )
+        pygame.draw.rect(screen, background_color, cover_up_rect)
+        screen.blit(time_text, (player_1_location[0] + 135, player_1_location[1]))
+
 
         
 

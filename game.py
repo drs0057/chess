@@ -1,10 +1,11 @@
 import pygame
 from board import *
+from variables import total_time
 
 # Initialize the game
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
-screen.fill(background)
+screen.fill(background_color)
 pygame.display.set_caption('Chess')
 
 # Build the board
@@ -19,10 +20,13 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             coor = pygame.mouse.get_pos()
-            
+
             # Handle any click event
             board.click(coor[0], coor[1])
-            
+
+    # Count down the clock
+    time_remaining_ms = total_time - pygame.time.get_ticks()
+    board.timer(time_remaining_ms, screen)      
 
     # Update the screen
     pygame.display.update()
