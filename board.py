@@ -1,4 +1,5 @@
 import pygame
+import time
 from variables import *
 from rook import Rook
 from knight import Knight
@@ -13,6 +14,18 @@ from pawn import Pawn
 # pygame.draw.rect() parameters: (surface to draw on, color, object to draw)
 
 # When square is clicked: ---> click() ---> get_square_from_coor() ---> select_clicked_square() or find_selected_square() ---> move_piece()
+
+
+class Player:
+    """A class describing one of the players."""
+
+    def __init__(self, color):
+        self.color = color # Either 'w' or 'b'
+        self.is_turn = False
+        self.time_remaining_ms = total_time
+        self.text_location = player_1_location if color == 'w' else player_2_location
+        self.last_time = 0
+
 
 
 class Square:
@@ -55,7 +68,12 @@ class Board:
         self.build_square_objects(screen)
         self.board_square_selected = False
         self.screen = screen
-        self.current_player = 'w'
+        self.first_move = False
+        self.player1 = Player('w')
+        self.player2 = Player('b')
+        self.current_player = self.player1
+        self.total_time = total_time
+
 
     def build_square_objects(self, screen):
         """Assigns an attribute; a 2D list of all 64 square objects."""
@@ -67,7 +85,81 @@ class Board:
                 row.append(Square(x_coor, y_coor, screen))
             squares.append(row)
         self.squares = squares
-    
+
+
+    def click(self, x_abs, y_abs):
+        """Handles any click event that is detected."""
+
+        clicked_square = self.get_square_from_coor(x_abs, y_abs)
+
+        # Situation 1: No square is currently selected;
+        # select the clicked square
+        if self.board_square_selected == False and clicked_square != None:
+            self.select_square(clicked_square)
+
+        # Situation 2: A square with a piece on it is already selected
+        elif self.board_square_selected == True and clicked_square != None:
+
+            # Find the square that is currently selected
+            current_square = self.find_selected_square()
+
+            # Situation 2a: Move piece to empty square
+            if clicked_square.occupying_piece == None:
+                self.move_piece(current_square, clicked_square)
+
+            # Situation 2b: A piece is on the target square; check legality
+            else:
+                if self.current_player.color == 'w':
+                    # Move piece
+                    if clicked_square.occupying_piece.color == 'b':
+                        self.move_piece(current_square, clicked_square)
+                    # Deselect
+                    else:
+                        self.deselect_square(current_square)
+
+                elif self.current_player.color == 'b':
+                    # Move piece
+                    if clicked_square.occupying_piece.color == 'w':
+                        self.move_piece(current_square, clicked_square)
+                    # Deselect
+                    else:
+                       self.deselect_square(current_square)
+
+
+    def deselect_square(self, square):
+        """Takes in a square object and 'deselects' it."""
+        
+        square.is_selected = False
+        square.display_color = square.color
+        square.draw()
+        self.board_square_selected = False
+
+
+    def find_selected_square(self):
+        """Returns the square object that is currently selected, returns
+        none if there isn't one."""
+
+        for row in self.squares:
+            for square in row:
+                if square.is_selected:
+                    return square
+        return None
+
+
+    def get_square_from_coor(self, x_abs, y_abs):
+        """Take absolute x and y position, returns corresponding square 
+        object."""
+
+        # Determine which coordinate was clicked
+        x_coor = int((x_abs - x_offset) // width)
+        y_coor = int((y_abs - y_offset) // height)
+
+        if x_coor not in range(8) or y_coor not in range(8):
+            return None
+        else:
+            square = self.squares[y_coor][x_coor]
+            return square
+
 
     def initial_setup(self):
         """Draws squares and places the pieces in their starting positions.
@@ -117,96 +209,11 @@ class Board:
             for square in row:
                 square.draw()
 
-        self.write_all()
+        # Display all needed text
+        self.write_coordinates()
+        self.write_player_names()
+        self.write_starting_times()
 
-    def get_square_from_coor(self, x_abs, y_abs):
-        """Take absolute x and y position, returns corresponding square 
-        object."""
-
-        # Determine which coordinate was clicked
-        x_coor = int((x_abs - x_offset) // width)
-        y_coor = int((y_abs - y_offset) // height)
-
-        if x_coor not in range(8) or y_coor not in range(8):
-            return None
-        else:
-            square = self.squares[y_coor][x_coor]
-            return square
-    
-    def select_square(self, square):
-        """Takes in a square object. 'Deselects' previous square if 
-        there is one, 'selects' desired square."""
-
-        # Deselect previous square selected if there is one
-        prev_square = self.find_selected_square()
-        if prev_square:
-            self.deselect_square(prev_square)
-    
-        # Check if piece is occupying the square and check for current player
-        if square.occupying_piece:
-
-            if self.current_player == 'w':
-                if square.occupying_piece.color == 'w':
-                    square.is_selected = True
-                    square.display_color = select_color
-                    square.draw()
-                    self.board_square_selected = True
-
-            elif self.current_player == 'b':
-                    if square.occupying_piece.color == 'b':
-                        square.is_selected = True
-                        square.display_color = select_color
-                        square.draw()
-                        self.board_square_selected = True
-
-    def find_selected_square(self):
-        """Returns the square object that is currently selected, returns
-        none if there isn't one."""
-
-        for row in self.squares:
-            for square in row:
-                if square.is_selected:
-                    return square
-        return None
-
-
-    def click(self, x_abs, y_abs):
-        """Handles any click event that is detected."""
-
-        clicked_square = self.get_square_from_coor(x_abs, y_abs)
-
-        # Situation 1: No square is currently selected;
-        # select the clicked square
-        if self.board_square_selected == False and clicked_square != None:
-            self.select_square(clicked_square)
-
-        # Situation 2: A square with a piece on it is already selected
-        elif self.board_square_selected == True and clicked_square != None:
-
-            # Find the square that is currently selected
-            current_square = self.find_selected_square()
-
-            # Situation 2a: Move piece to empty square
-            if clicked_square.occupying_piece == None:
-                self.move_piece(current_square, clicked_square)
-
-            # Situation 2b: A piece is on the target square; check legality
-            else:
-                if self.current_player == 'w':
-                    # Move piece
-                    if clicked_square.occupying_piece.color == 'b':
-                        self.move_piece(current_square, clicked_square)
-                    # Deselect
-                    else:
-                        self.deselect_square(current_square)
-
-                elif self.current_player == 'b':
-                    # Move piece
-                    if clicked_square.occupying_piece.color == 'w':
-                        self.move_piece(current_square, clicked_square)
-                    # Deselect
-                    else:
-                       self.deselect_square(current_square)
 
     def move_piece(self, current_square, target_square):
         """Takes in the current square and the target square objects, 
@@ -224,14 +231,83 @@ class Board:
         # Deselect the previous square
         self.deselect_square(current_square)
 
-        #Switch players
-        self.current_player = 'b' if self.current_player == 'w' else 'w'
+        # Switch players
+        self.switch_turn()
 
 
-    def write_all(self):
-        """A function to write all coordinate labels and player names."""
+    def select_square(self, square):
+        """Takes in a square object. 'Deselects' previous square if 
+        there is one, 'selects' desired square."""
 
-        # Write coordinates
+        # Deselect previous square selected if there is one
+        prev_square = self.find_selected_square()
+        if prev_square:
+            self.deselect_square(prev_square)
+    
+        # Check if piece is occupying the square and check for current player
+        if square.occupying_piece:
+
+            if self.current_player.color == 'w':
+                if square.occupying_piece.color == 'w':
+                    square.is_selected = True
+                    square.display_color = select_color
+                    square.draw()
+                    self.board_square_selected = True
+
+            elif self.current_player.color == 'b':
+                    if square.occupying_piece.color == 'b':
+                        square.is_selected = True
+                        square.display_color = select_color
+                        square.draw()
+                        self.board_square_selected = True
+
+
+    def switch_turn(self):
+        """Switches turns."""
+
+        # Switch players
+        self.current_player = self.player2 if self.current_player == self.player1 else self.player1
+
+        # Log the current time
+        self.current_player.last_time = pygame.time.get_ticks()
+
+        # Indicate if first move has occured
+        if self.first_move == False:
+            self.first_move = True
+
+
+    def timer(self, player, screen):
+        """Takes in a player object and counts down their time."""
+
+        font = pygame.font.SysFont("Arial", 30)
+
+        if self.first_move:
+
+            # Count down the time
+            elapsed_time = pygame.time.get_ticks() - self.current_player.last_time
+            player.time_remaining_ms -= elapsed_time
+            minutes = (player.time_remaining_ms // 1000) // 60
+            seconds = (player.time_remaining_ms // 1000) % 60            
+            time_format = "{:02d}:{:02d}".format(minutes, seconds)
+            time_text = font.render(time_format, False, (0, 0, 0))
+
+            # Cover up the last time, then display new time
+            cover_up_rect = pygame.Rect(
+                player.text_location[0] + 125, player.text_location[1], 100, 30
+                )
+            pygame.draw.rect(screen, background_color, cover_up_rect)
+            self.screen.blit(
+                time_text, 
+                (player.text_location[0] + 135, player.text_location[1])
+                )
+
+            # Note what the current time is
+            self.current_player.last_time = pygame.time.get_ticks()
+
+
+    def write_coordinates(self):
+        """Writes all coordinate labels."""
+
         font = pygame.font.SysFont("Arial", 28)
         for x_coor in range(8):
             self.screen.blit(
@@ -244,55 +320,39 @@ class Board:
                 (font.render(y_labels[y_coor], True, (0, 0, 0))), 
                 (x_offset - 20, y_coor * height + y_offset + height/2 - 8)
             )
+
         
+    def write_player_names(self):
+        """Writes both player names."""
+
         # Write player names
         font = pygame.font.SysFont("Arial", 28, bold=True)
         self.screen.blit(
             font.render("Player 2:", True, (0, 0, 0)),
-            (player_2_location)
+            (self.player2.text_location)
         )
 
         self.screen.blit(
             font.render("Player 1:", True, (0, 0, 0)),
-            (player_1_location)
+            (self.player1.text_location)
         )
 
 
-    def deselect_square(self, square):
-        """Takes in a square object and 'deselects' it."""
+    def write_starting_times(self):
+        """Writes both starting times"""
         
-        square.is_selected = False
-        square.display_color = square.color
-        square.draw()
-        self.board_square_selected = False
-
-
-    def timer(self, time_remaining_ms, screen):
-        """Takes in time remaining, displays a timer for both players."""
-
-        # Format the time
-        minutes = (time_remaining_ms // 1000) // 60
-        seconds = (time_remaining_ms // 1000) % 60
-        time_format = "{:02d}:{:02d}".format(minutes, seconds)
         font = pygame.font.SysFont("Arial", 30)
+        minutes = (self.total_time // 1000) // 60
+        seconds = (self.total_time // 1000) % 60            
+        time_format = "{:02d}:{:02d}".format(minutes, seconds)
         time_text = font.render(time_format, False, (0, 0, 0))
-
-        # Cover up the last time, then display new time for each player
-        # Player 2
-        cover_up_rect = pygame.Rect(
-            player_2_location[0] + 125, player_2_location[1], 100, 30
+        self.screen.blit(
+            time_text, 
+            (self.player1.text_location[0] + 135, 
+             self.player1.text_location[1])
             )
-        pygame.draw.rect(screen, background_color, cover_up_rect)
-        screen.blit(time_text, (player_2_location[0] + 135, player_2_location[1]))
-
-        # Player 1
-        cover_up_rect = pygame.Rect(
-            player_1_location[0] + 125, player_1_location[1], 100, 30
+        self.screen.blit(
+            time_text, 
+            (self.player2.text_location[0] + 135, 
+             self.player2.text_location[1])
             )
-        pygame.draw.rect(screen, background_color, cover_up_rect)
-        screen.blit(time_text, (player_1_location[0] + 135, player_1_location[1]))
-
-
-        
-
-            
