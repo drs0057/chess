@@ -1,5 +1,4 @@
 import pygame
-import time
 from variables import *
 from rook import Rook
 from knight import Knight
@@ -170,39 +169,27 @@ class Board:
                 
                 if 'R' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Rook(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = Rook(color)
 
                 if 'K' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Knight(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = Knight(color)
 
                 if 'B' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Bishop(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = Bishop(color)
 
                 if 'Q' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Queen(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = Queen(color)
 
                 if 'G' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = King(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = King(color)
 
                 if 'P' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Pawn(
-                        x_coor, y_coor, color
-                    )
+                    self.squares[y_coor][x_coor].occupying_piece = Pawn(color)
             
         # All squares have corrected initial states, now display them
         for row in self.squares:

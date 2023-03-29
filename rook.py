@@ -15,8 +15,8 @@ surface_b = pygame.transform.scale(
 class Rook(Piece):
     """A class representing a rook."""
 
-    def __init__(self, x_coor, y_coor, color):
-        super().__init__(x_coor, y_coor, color)
+    def __init__(self, color):
+        super().__init__(color)
 
         # Determine image based on the color
         self.image = surface_w if color == 'w' else surface_b
