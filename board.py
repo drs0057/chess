@@ -196,6 +196,9 @@ class Board:
             for square in row:
                 square.draw()
 
+        # Refresh possible moves across the whole board
+        self.refresh_possible_board_moves()
+        
         # Display all needed text
         self.write_coordinates()
         self.write_player_names()
@@ -218,8 +221,20 @@ class Board:
         # Deselect the previous square
         self.deselect_square(current_square)
 
+        # Refresh possible moves across the whole board
+        self.refresh_possible_board_moves()
+
         # Switch players
         self.switch_turn()
+
+
+    def refresh_possible_board_moves(self):
+        """Refreshes each piece's 'possible_moves' attribute."""
+
+        for row in self.squares:
+            for square in row:
+                if square.occupying_piece:
+                    square.occupying_piece.get_possible_moves()
 
 
     def select_square(self, square):

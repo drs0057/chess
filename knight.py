@@ -1,6 +1,6 @@
 import pygame
 from piece import Piece
-from variables import *
+from variables import width, height
 
 # Import needed objects
 surface_w = pygame.transform.scale(
@@ -20,3 +20,9 @@ class Knight(Piece):
 
         # Determine image based on the color
         self.image = surface_w if color == 'w' else surface_b
+
+
+    def get_possible_moves(self):
+        """Gathers all possible moves and stores them."""
+
+        self.possible_moves = ''
