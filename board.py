@@ -101,23 +101,11 @@ class Board:
             if clicked_square.occupying_piece == None:
                 self.move_piece(current_square, clicked_square)
 
-            # Situation 2b: A piece is on the target square; check legality
+            # Situation 2b: A piece is on the target square
             else:
-                if self.current_player.color == 'w':
-                    # Move piece
-                    if clicked_square.occupying_piece.color == 'b':
-                        self.move_piece(current_square, clicked_square)
-                    # Deselect
-                    else:
-                        self.deselect_square(current_square)
-
-                elif self.current_player.color == 'b':
-                    # Move piece
-                    if clicked_square.occupying_piece.color == 'w':
-                        self.move_piece(current_square, clicked_square)
-                    # Deselect
-                    else:
-                       self.deselect_square(current_square)
+              self.selected_piece_to_occupied_square(
+                  current_square, clicked_square
+                  )
 
 
     def deselect_square(self, square):
@@ -224,7 +212,7 @@ class Board:
 
 
     def refresh_possible_board_moves(self):
-        """Refreshes each piece's 'possible_moves' attribute."""
+        """Refreshes each piece's possible moves."""
 
         for row in self.squares:
             for square in row:
@@ -257,6 +245,31 @@ class Board:
                         square.display_color = select_color
                         square.draw()
                         self.board_square_selected = True
+
+
+    def selected_piece_to_occupied_square(self, current_square, clicked_square):
+        """Deals with a selected piece potentially traveling to an 
+        occupied square."""
+
+        if self.current_player.color == 'w':
+            # Check for castle first
+            if type(current_square.occupying_piece).__name__ == 'King' \
+                and type(clicked_square.occupying_piece).__name__ == 'Rook':
+                self.move_piece(current_square, clicked_square)
+            elif clicked_square.occupying_piece.color == 'b':
+                self.move_piece(current_square, clicked_square)
+            else:
+                self.deselect_square(current_square)
+
+        elif self.current_player.color == 'b':
+            # Check for castle first
+            if type(current_square.occupying_piece).__name__ == 'King' \
+                and type(clicked_square.occupying_piece).__name__ == 'Rook':
+                self.move_piece(current_square, clicked_square)
+            elif clicked_square.occupying_piece.color == 'w':
+                self.move_piece(current_square, clicked_square)
+            else:
+                self.deselect_square(current_square)
 
 
     def switch_turn(self):

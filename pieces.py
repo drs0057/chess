@@ -10,7 +10,7 @@ class Piece:
 
         # Determine image based on the color
         self.image = surface_w if color == 'w' else surface_b
-                
+
         # Stores all possible moves, initially all False
         self.possible_moves = [
             [False for x_coor in range(8)] for y_coor in range(8)
@@ -18,7 +18,6 @@ class Piece:
 
 
 
-    ##      PAWN        ##
 class Pawn(Piece):
     """A class representing a pawn."""
 
@@ -38,12 +37,10 @@ class Pawn(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
 
 
-
-    ##      KNIGHT        ##
 class Knight(Piece):
     """A class representing a knight."""
 
@@ -63,12 +60,10 @@ class Knight(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
 
 
-
-    ##      BISHOP        ##
 class Bishop(Piece):
     """A class representing a bishop."""
 
@@ -88,12 +83,10 @@ class Bishop(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
 
 
-
-    ##      ROOK        ##
 class Rook(Piece):
     """A class representing a rook."""
 
@@ -113,12 +106,10 @@ class Rook(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
 
 
-
-    ##      QUEEN        ##
 class Queen(Piece):
     """A class representing a queen."""
 
@@ -138,12 +129,10 @@ class Queen(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
 
 
-
-    ##      KING        ##
 class King(Piece):
     """A class representing a king."""
 
@@ -163,5 +152,5 @@ class King(Piece):
 
 
     def get_possible_moves(self):
-        """Gathers all possible moves and stores them."""
-        self.possible_moves
+        """Gathers all possible moves for the piece and stores them."""
+        self.possible_moves = ''
