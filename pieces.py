@@ -8,11 +8,19 @@ class Piece:
 
         self.color = color # Either 'w' or 'b'
         self.has_moved = False
+        self.residing_square = None
+        self.possible_moves = None
 
         # Determine image based on the color
         self.image = surface_w if color == 'w' else surface_b
 
-        # Stores all possible moves, initially all False
+        # All possible moves initialized to False
+        self.clear_moves()
+
+    
+    def clear_moves(self):
+        """Resets all possible moves for a piece to False."""
+
         self.possible_moves = [
             [False for x_coor in range(8)] for y_coor in range(8)
         ]
@@ -39,7 +47,13 @@ class Pawn(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+
+        self.clear_moves()
+        y, x = self.residing_square.y_coor, self.residing_square.x_coor
+        self.possible_moves[y - 1][x] = True
+
+        if self.has_moved == False:
+            self.possible_moves[y - 2][x] = True
 
 
 class Knight(Piece):
@@ -62,7 +76,19 @@ class Knight(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+
+        self.clear_moves()
+        y, x = self.residing_square.y_coor, self.residing_square.x_coor
+
+        # self.possible_moves[y - 2][x + 1] = True
+        # self.possible_moves[y - 2][x - 1] = True
+        # self.possible_moves[y + 2][x - 1] = True
+        # self.possible_moves[y + 2][x - 1] = True
+        # self.possible_moves[x - 2][y - 1] = True
+        # self.possible_moves[x - 2][y + 1] = True
+        # self.possible_moves[x + 2][y - 1] = True
+        # self.possible_moves[x + 2][y + 1] = True
+
 
 
 class Bishop(Piece):
@@ -85,7 +111,7 @@ class Bishop(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+        self.possible_moves
 
 
 class Rook(Piece):
@@ -108,7 +134,7 @@ class Rook(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+        self.possible_moves
 
 
 class Queen(Piece):
@@ -131,7 +157,7 @@ class Queen(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+        self.possible_moves
 
 
 class King(Piece):
@@ -154,4 +180,4 @@ class King(Piece):
 
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
-        self.possible_moves = ''
+        self.possible_moves

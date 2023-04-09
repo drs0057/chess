@@ -12,7 +12,7 @@ x_labels = ['a','b','c','d','e','f','g','h']
 y_labels = ['8','7','6','5','4','3','2','1']
 player_2_location = (x_offset, y_offset - 45)
 player_1_location = (x_offset, y_offset + height*8 + 35)
-initial_state = [
+test_state = [
     ['', '', '', '', 'bG', '', '', ''],
     ['', '', '', '', '', '', '', ''],
     ['', '', '', '', '', '', '', ''],
@@ -22,7 +22,7 @@ initial_state = [
     ['', '', '', '', '', 'wP', '', ''],
     ['wR', 'wK', 'wB', 'wQ', 'wG', '', '', 'wR']
 ]
-initial_state1 = [
+initial_state = [
     ['bR', 'bK', 'bB', 'bQ', 'bG', 'bB', 'bK', 'bR'],
     ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
     ['', '', '', '', '', '', '', ''],

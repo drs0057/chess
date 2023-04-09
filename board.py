@@ -1,5 +1,5 @@
 import pygame
-from variables import total_time, player_1_location, player_2_location, height, width, x_offset, y_offset, x_labels, y_labels, light, dark, initial_state1, select_color, background_color
+from variables import total_time, player_1_location, player_2_location, height, width, x_offset, y_offset, x_labels, y_labels, light, dark, initial_state, test_state, select_color, background_color
 from pieces import Pawn, Knight, Bishop, Rook, Queen, King
 
 # Notes:
@@ -57,7 +57,7 @@ class Board:
     """A class representing the board as a whole."""
 
     def __init__(self, screen):
-        self.init_state = initial_state1
+        self.init_state = test_state
         self.squares = None
         self.build_square_objects(screen)
         self.board_square_selected = False
@@ -244,27 +244,39 @@ class Board:
                 
                 if 'R' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Rook(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = Rook(color)
+                    square.occupying_piece.residing_square = square
 
                 if 'K' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Knight(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = Knight(color)
+                    square.occupying_piece.residing_square = square
 
                 if 'B' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Bishop(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = Bishop(color)
+                    square.occupying_piece.residing_square = square
 
                 if 'Q' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Queen(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = Queen(color)
+                    square.occupying_piece.residing_square = square
 
                 if 'G' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = King(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = King(color)
+                    square.occupying_piece.residing_square = square
 
                 if 'P' in piece:
                     color = 'w' if 'w' in piece else 'b'
-                    self.squares[y_coor][x_coor].occupying_piece = Pawn(color)
+                    square = self.squares[y_coor][x_coor]
+                    square.occupying_piece = Pawn(color)
+                    square.occupying_piece.residing_square = square
             
         # All squares have corrected initial states, now display them
         for row in self.squares:
@@ -280,9 +292,14 @@ class Board:
         self.write_starting_times()
 
 
-    def is_legal(self, curent_square, clicked_square):
+    def is_legal(self, current_square, clicked_square):
         """Checks if a move is legal, returns boolean."""
-        return True
+
+        if current_square.occupying_piece.possible_moves[clicked_square.y_coor]\
+        [clicked_square.x_coor] == True:
+            return True
+        else:
+            return False
 
    
     def move_piece(self, current_square, clicked_square):
@@ -294,6 +311,7 @@ class Board:
             moving_piece.has_moved = True
             current_square.occupying_piece = None
             clicked_square.occupying_piece = moving_piece
+            clicked_square.occupying_piece.residing_square = clicked_square
             current_square.draw()
             clicked_square.draw()
             
