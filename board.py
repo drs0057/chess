@@ -7,7 +7,7 @@ from pieces import Pawn, Knight, Bishop, Rook, Queen, King
 # Rect class parameters: (abs. x_coor of top left corner, abs. y_coor of top left corner, width of rect, height of rect)
 # pygame.draw.rect() parameters: (surface to draw on, color, object to draw)
 
-# When square is clicked: ---> click() ---> get_square_from_coor() ---> select_clicked_square() or find_selected_square() ---> move_piece()
+# When square is clicked: ---> click() ---> get_square_from_abs() ---> select_clicked_square() or find_selected_square() ---> move_piece()
 
 
 class Player:
@@ -84,7 +84,7 @@ class Board:
     def click(self, x_abs, y_abs):
         """Handles any click event that is detected."""
 
-        clicked_square = self.get_square_from_coor(x_abs, y_abs)
+        clicked_square = self.get_square_from_abs(x_abs, y_abs)
 
         # Situation 1: No square is currently selected;
         # select the clicked square
@@ -114,9 +114,72 @@ class Board:
                 self.deselect_square(current_square)
 
 
-    def castle(self, current_square, clicked_square):
+    def castle(self, king_square1, rook_square1):
         """Castles the king and the rook."""
-        pass
+
+        # If either piece has moved, cancel the castle
+        if king_square1.occupying_piece.has_moved \
+            or rook_square1.occupying_piece.has_moved:
+            self.deselect_square(king_square1)
+            return        
+        
+        # Castle to the  right
+        if king_square1.x_coor < rook_square1.x_coor:
+
+            # If path is not clear, cancel the castle
+            for i in [1, 2]:
+                if self.squares[king_square1.y_coor][king_square1.x_coor + i].occupying_piece:
+                    self.deselect_square(king_square1)
+                    return
+
+            # Move King
+            king_square2 = self.squares[king_square1.y_coor][king_square1.x_coor + 2]
+            moving_king = king_square1.occupying_piece
+            moving_king.has_moved = True
+            king_square1.occupying_piece = None
+            king_square2.occupying_piece = moving_king
+            king_square1.draw()
+            king_square2.draw()
+
+            # Move Rook
+            rook_square2 = self.squares[king_square2.y_coor][king_square2.x_coor - 1]
+            moving_rook = rook_square1.occupying_piece
+            moving_rook.has_moved = True
+            rook_square1.occupying_piece = None
+            rook_square2.occupying_piece = moving_rook
+            rook_square1.draw()
+            rook_square2.draw()
+
+            self.end_turn()
+        
+        # Castle to the left
+        elif king_square1.x_coor > rook_square1.x_coor:
+
+           # If path is not clear, cancel the castle
+            for i in [1, 2, 3]:
+                if self.squares[king_square1.y_coor][king_square1.x_coor - i].occupying_piece:
+                    self.deselect_square(king_square1)
+                    return
+                            
+            # Move King
+            king_square2 = self.squares[king_square1.y_coor][king_square1.x_coor - 2]
+            moving_king = king_square1.occupying_piece
+            moving_king.has_moved = True
+            king_square1.occupying_piece = None
+            king_square2.occupying_piece = moving_king
+            king_square1.draw()
+            king_square2.draw()
+
+            # Move Rook
+            rook_square2 = self.squares[king_square2.y_coor][king_square2.x_coor + 1]
+            moving_rook = rook_square1.occupying_piece
+            moving_rook.has_moved = True
+            rook_square1.occupying_piece = None
+            rook_square2.occupying_piece = moving_rook
+            rook_square1.draw()
+            rook_square2.draw()
+
+            self.end_turn()
 
 
     def deselect_square(self, square):
@@ -126,6 +189,19 @@ class Board:
         square.display_color = square.color
         square.draw()
         self.board_square_selected = False
+
+    
+    def end_turn(self):
+        """Ends the turn of the current player."""
+
+        # Deselect the previous square
+        self.deselect_square(self.find_selected_square())
+
+        # Refresh possible moves across the whole board
+        self.refresh_possible_board_moves()
+
+        # Switch players
+        self.switch_turn()
 
 
     def find_selected_square(self):
@@ -139,7 +215,7 @@ class Board:
         return None
 
 
-    def get_square_from_coor(self, x_abs, y_abs):
+    def get_square_from_abs(self, x_abs, y_abs):
         """Take absolute x and y position, returns corresponding square 
         object."""
 
@@ -209,22 +285,13 @@ class Board:
         displays the outcome of the move."""
 
         moving_piece = current_square.occupying_piece
-        # Clear the previous square
+        moving_piece.has_moved = True
         current_square.occupying_piece = None
-        # Move the piece to the target square
         target_square.occupying_piece = moving_piece
-        # Redraw both squares
         current_square.draw()
         target_square.draw()
         
-        # Deselect the previous square
-        self.deselect_square(current_square)
-
-        # Refresh possible moves across the whole board
-        self.refresh_possible_board_moves()
-
-        # Switch players
-        self.switch_turn()
+        self.end_turn()
 
 
     def refresh_possible_board_moves(self):

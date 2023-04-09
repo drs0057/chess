@@ -7,6 +7,7 @@ class Piece:
     def __init__(self, color, surface_w, surface_b):
 
         self.color = color # Either 'w' or 'b'
+        self.has_moved = False
 
         # Determine image based on the color
         self.image = surface_w if color == 'w' else surface_b
