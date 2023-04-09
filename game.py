@@ -1,6 +1,6 @@
 import pygame
-from board import *
-from variables import *
+from board import Board
+from variables import background_color, screen_width, screen_height
 
 # Initialize the game
 pygame.init()

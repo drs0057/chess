@@ -1,6 +1,6 @@
 import pygame
-from variables import *
-from pieces import *
+from variables import total_time, player_1_location, player_2_location, height, width, x_offset, y_offset, x_labels, y_labels, light, dark, initial_state, select_color, background_color
+from pieces import Pawn, Knight, Bishop, Rook, Queen, King
 
 # Notes:
 
@@ -98,14 +98,25 @@ class Board:
             current_square = self.find_selected_square()
 
             # Situation 2a: Move piece to empty square
-            if clicked_square.occupying_piece == None:
-                self.move_piece(current_square, clicked_square)
+            if clicked_square.occupying_piece == None \
+                and self.is_legal(current_square, clicked_square):
+                    self.move_piece(current_square, clicked_square)
 
             # Situation 2b: A piece is on the target square
+            elif clicked_square.occupying_piece \
+                and self.is_legal(current_square, clicked_square):
+                self.selected_piece_to_occupied_square(
+                    current_square, clicked_square
+                    )
+                
+            # Situation 2c: Move is illegal, deselect the square
             else:
-              self.selected_piece_to_occupied_square(
-                  current_square, clicked_square
-                  )
+                self.deselect_square(current_square)
+
+
+    def castle(self, current_square, clicked_square):
+        """Castles the king and the rook."""
+        pass
 
 
     def deselect_square(self, square):
@@ -188,6 +199,11 @@ class Board:
         self.write_starting_times()
 
 
+    def is_legal(self, curent_square, clicked_square):
+        """Checks if a move is legal, returns boolean."""
+        return True
+
+   
     def move_piece(self, current_square, target_square):
         """Takes in the current square and the target square objects, 
         displays the outcome of the move."""
@@ -249,13 +265,15 @@ class Board:
 
     def selected_piece_to_occupied_square(self, current_square, clicked_square):
         """Deals with a selected piece potentially traveling to an 
-        occupied square."""
+        occupied square. Like colors cannot capture. 
+        All legality is checked elsewhere."""
 
         if self.current_player.color == 'w':
             # Check for castle first
             if type(current_square.occupying_piece).__name__ == 'King' \
                 and type(clicked_square.occupying_piece).__name__ == 'Rook':
-                self.move_piece(current_square, clicked_square)
+                self.castle(current_square, clicked_square)
+
             elif clicked_square.occupying_piece.color == 'b':
                 self.move_piece(current_square, clicked_square)
             else:
@@ -265,7 +283,8 @@ class Board:
             # Check for castle first
             if type(current_square.occupying_piece).__name__ == 'King' \
                 and type(clicked_square.occupying_piece).__name__ == 'Rook':
-                self.move_piece(current_square, clicked_square)
+                self.castle(current_square, clicked_square)
+
             elif clicked_square.occupying_piece.color == 'w':
                 self.move_piece(current_square, clicked_square)
             else:
