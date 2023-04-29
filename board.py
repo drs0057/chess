@@ -314,7 +314,6 @@ class Board:
             clicked_square.occupying_piece.residing_square = clicked_square
             current_square.draw()
             clicked_square.draw()
-            
             self.end_turn()
 
         else:
