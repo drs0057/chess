@@ -12,7 +12,6 @@ from pieces import Pawn, Knight, Bishop, Rook, Queen, King
 
 class Player:
     """A class describing one of the players."""
-
     def __init__(self, color):
         self.color = color # Either 'w' or 'b'
         self.is_turn = False
@@ -40,10 +39,8 @@ class Square:
 
     def draw(self):
         """Draws a square on the board and the potential piece occupying it."""
-
         # Draw the basic square
         pygame.draw.rect(self.screen, self.display_color, self.rect)
-
         # Draw the piece occupying the square, if there is one
         if self.occupying_piece:
             piece_rect = self.occupying_piece.image.get_rect(
@@ -55,7 +52,6 @@ class Square:
 
 class Board:
     """A class representing the board as a whole."""
-
     def __init__(self, screen):
         self.init_state = test_state
         self.squares = None
@@ -97,23 +93,27 @@ class Board:
             # Find the square that is currently selected
             current_square = self.find_selected_square()
                 
-            # Check for castle first
+            # Check for castle
             if type(current_square.occupying_piece).__name__ == 'King' \
             and type(clicked_square.occupying_piece).__name__ == 'Rook':
                 self.castle(current_square, clicked_square)
                 return
 
-            # Situation 2a: A piece occupies the clicked square
-            if clicked_square.occupying_piece:
+            # Check for promotion
+            if type(current_square.occupying_piece).__name__ == 'Pawn' and \
+            clicked_square.y_coor in [0, 7]:
+                self.promote(current_square, clicked_square)
 
+            # Situation 2b: A piece occupies the clicked square
+            elif clicked_square.occupying_piece:
                 # Like colors cannot capture
                 if self.current_player.color == clicked_square.occupying_piece.color:
                     self.select_square(clicked_square)
                     return
                 else:
                     self.move_piece(current_square, clicked_square)
-                
-            # Situation 2b: Clicked square is empty
+
+            # Situation 2c: Clicked square is empty
             else:
                 self.move_piece(current_square, clicked_square)
 
@@ -294,7 +294,6 @@ class Board:
 
     def is_legal(self, current_square, clicked_square):
         """Checks if a move is legal, returns boolean."""
-
         if current_square.occupying_piece.possible_moves[clicked_square.y_coor]\
         [clicked_square.x_coor] == True:
             return True
@@ -304,9 +303,7 @@ class Board:
    
     def move_piece(self, current_square, clicked_square):
         """Moves a piece from one square to another. Legality is checked."""
-            
         if self.is_legal(current_square, clicked_square):
-
             moving_piece = current_square.occupying_piece
             moving_piece.has_moved = True
             current_square.occupying_piece = None
@@ -315,7 +312,19 @@ class Board:
             current_square.draw()
             clicked_square.draw()
             self.end_turn()
+        else:
+            self.deselect_square(current_square)
 
+
+    def promote(self, current_square, clicked_square):
+        """Promotes a pawn to a queen."""
+        if self.is_legal(current_square, clicked_square):
+            clicked_square.occupying_piece = Queen(current_square.occupying_piece.color)
+            clicked_square.occupying_piece.residing_square = clicked_square
+            current_square.occupying_piece = None
+            current_square.draw()
+            clicked_square.draw()
+            self.end_turn()
         else:
             self.deselect_square(current_square)
 
@@ -352,7 +361,7 @@ class Board:
         """Switches turns."""
 
         # Switch players
-        self.current_player = self.player2 if self.current_player == self.player1 else self.player1
+        # self.current_player = self.player2 if self.current_player == self.player1 else self.player1
 
         # Log the current time
         self.current_player.last_time = pygame.time.get_ticks()

@@ -4,7 +4,7 @@ from variables import width, height
 class Piece:
     """Define a class that describes a generic piece."""
     def __init__(self, color, surface_w, surface_b):
-        self.color = color # Either 'w' or 'b'
+        self.color = color  # Either 'w' or 'b'
         self.has_moved = False
         self.residing_square = None
         self.possible_moves = None
@@ -32,7 +32,6 @@ class Piece:
 
 class Pawn(Piece):
     """A class representing a pawn."""
-
     def __init__(self, color):
         # Import needed images
         surface_w = pygame.transform.scale(
@@ -50,7 +49,6 @@ class Pawn(Piece):
     def get_possible_moves(self):
         """Gathers all possible moves for the piece and stores them."""
         self.clear_moves()
-
         # If the pawn has moved, remove the initial double move
         if self.has_moved == True:
             try:
@@ -62,9 +60,7 @@ class Pawn(Piece):
 
 class Knight(Piece):
     """A class representing a knight."""
-
     def __init__(self, color):
-
         # Import needed images
         surface_w = pygame.transform.scale(
             pygame.image.load('images/knight_white.png'), 
@@ -90,7 +86,6 @@ class Knight(Piece):
 class Bishop(Piece):
     """A class representing a bishop."""
     def __init__(self, color):
-
         # Import needed images
         surface_w = pygame.transform.scale(
             pygame.image.load('images/bishop_white.png'), 
@@ -118,7 +113,6 @@ class Bishop(Piece):
 class Rook(Piece):
     """A class representing a rook."""
     def __init__(self, color):
-
         # Import needed images
         surface_w = pygame.transform.scale(
             pygame.image.load('images/rook_white.png'), 
@@ -146,7 +140,6 @@ class Rook(Piece):
 class Queen(Piece):
     """A class representing a queen."""
     def __init__(self, color):
-
         # Import needed images
         surface_w = pygame.transform.scale(
             pygame.image.load('images/queen_white.png'), 
