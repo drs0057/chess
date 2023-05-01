@@ -335,7 +335,7 @@ class Board:
         for row in self.squares:
             for square in row:
                 if square.occupying_piece:
-                    square.occupying_piece.get_possible_moves()
+                    square.occupying_piece.get_possible_moves(self.squares)
 
 
     def select_square(self, square):
@@ -373,11 +373,8 @@ class Board:
 
     def timer(self, player, screen):
         """Takes in a player object and counts down their time."""
-
         font = pygame.font.SysFont("Arial", 30)
-
         if self.first_move:
-
             # Count down the time
             elapsed_time = pygame.time.get_ticks() - self.current_player.last_time
             player.time_remaining_ms -= elapsed_time

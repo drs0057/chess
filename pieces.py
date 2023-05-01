@@ -15,19 +15,11 @@ class Piece:
 
     
     def clear_moves(self):
-        """Resets all possible moves for a piece to False."""
+        """Resets a piece's moves and possible moves."""
         self.possible_moves = [
             [False for x_coor in range(8)] for y_coor in range(8)
         ]
 
-
-    def add_moves(self):
-        """Adds moves to piece's possilbe moves."""
-        for dy, dx in self.moves:
-            new_y = self.residing_square.y_coor + dy
-            new_x = self.residing_square.x_coor + dx
-            if new_y in range(8) and new_x in range(8):
-                self.possible_moves[new_y][new_x] = True
 
 
 class Pawn(Piece):
@@ -46,16 +38,27 @@ class Pawn(Piece):
         super().__init__(color, surface_w, surface_b)
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        # If the pawn has moved, remove the initial double move
-        if self.has_moved == True:
-            try:
-                self.moves.pop(1)
-            except IndexError:
-                pass
-        self.add_moves()
+        if self.color == 'w':
+            self.add_moves_until_blocked(-1, 0, squares)
+            if self.has_moved == False:
+                self.add_moves_until_blocked(-2, 0, squares)
+        elif self.color == 'b':
+            self.add_moves_until_blocked(1, 0, squares)
+            if self.has_moved == False:
+                self.add_moves_until_blocked(2, 0, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        new_y = self.residing_square.y_coor + y_dir
+        new_x = self.residing_square.x_coor + x_dir
+        if new_y not in range(8) or new_x not in range(8):
+            return
+        self.possible_moves[new_y][new_x] = True
+
 
 
 class Knight(Piece):
@@ -77,10 +80,27 @@ class Knight(Piece):
         super().__init__(color, surface_w, surface_b)
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        self.add_moves()
+        self.add_moves_until_blocked(-2, -1, squares)
+        self.add_moves_until_blocked(-2, 1, squares)
+        self.add_moves_until_blocked(2, -1, squares)
+        self.add_moves_until_blocked(2, 1, squares)
+        self.add_moves_until_blocked(-1, -2, squares)
+        self.add_moves_until_blocked(-1, 2, squares)
+        self.add_moves_until_blocked(1, -2, squares)
+        self.add_moves_until_blocked(1, 2, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        new_y = self.residing_square.y_coor + y_dir
+        new_x = self.residing_square.x_coor + x_dir
+        if new_y not in range(8) or new_x not in range(8):
+            return
+        self.possible_moves[new_y][new_x] = True
+
 
 
 class Bishop(Piece):
@@ -96,18 +116,28 @@ class Bishop(Piece):
             (width, height)
         )
         super().__init__(color, surface_w, surface_b)
-        self.moves = (
-            [(i, i) for i in range(1, 8)] +
-            [(-i, -i) for i in range(1, 8)] +
-            [(-i, i) for i in range(1, 8)] +
-            [(i, -i) for i in range(1, 8)]
-        )
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        self.add_moves()
+        self.add_moves_until_blocked(1, 1, squares)
+        self.add_moves_until_blocked(1, -1, squares)
+        self.add_moves_until_blocked(-1, 1, squares)
+        self.add_moves_until_blocked(-1, -1, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        for i in range(1, 8):
+            new_y = self.residing_square.y_coor + i * y_dir
+            new_x = self.residing_square.x_coor + i * x_dir
+            if new_y not in range(8) or new_x not in range(8):
+                continue
+            self.possible_moves[new_y][new_x] = True
+            if squares[new_y][new_x].occupying_piece:
+                break
+
 
 
 class Rook(Piece):
@@ -123,18 +153,28 @@ class Rook(Piece):
             (width, height)
         )
         super().__init__(color, surface_w, surface_b)
-        self.moves = (
-            [(i, 0) for i in range(1, 8)] + 
-            [(-i, 0) for i in range(1, 8)] + 
-            [(0, i) for i in range(1, 8)] + 
-            [(0, -i) for i in range(1, 8)]
-        )
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        self.add_moves()
+        self.add_moves_until_blocked(0, 1, squares)
+        self.add_moves_until_blocked(0, -1, squares)
+        self.add_moves_until_blocked(1, 0, squares)
+        self.add_moves_until_blocked(-1, 0, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        for i in range(1, 8):
+            new_y = self.residing_square.y_coor + i * y_dir
+            new_x = self.residing_square.x_coor + i * x_dir
+            if new_y not in range(8) or new_x not in range(8):
+                continue
+            self.possible_moves[new_y][new_x] = True
+            if squares[new_y][new_x].occupying_piece:
+                break
+
 
 
 class Queen(Piece):
@@ -150,22 +190,32 @@ class Queen(Piece):
             (width, height)
         )
         super().__init__(color, surface_w, surface_b)
-        self.moves = (
-            [(i, i) for i in range(1, 8)] +
-            [(-i, -i) for i in range(1, 8)] +
-            [(-i, i) for i in range(1, 8)] +
-            [(i, -i) for i in range(1, 8)] +
-            [(i, 0) for i in range(1, 8)] + 
-            [(-i, 0) for i in range(1, 8)] + 
-            [(0, i) for i in range(1, 8)] + 
-            [(0, -i) for i in range(1, 8)]
-        )
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        self.add_moves()
+        self.add_moves_until_blocked(0, 1, squares)
+        self.add_moves_until_blocked(0, -1, squares)
+        self.add_moves_until_blocked(1, 0, squares)
+        self.add_moves_until_blocked(-1, 0, squares)
+        self.add_moves_until_blocked(1, 1, squares)
+        self.add_moves_until_blocked(1, -1, squares)
+        self.add_moves_until_blocked(-1, 1, squares)
+        self.add_moves_until_blocked(-1, -1, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        for i in range(1, 8):
+            new_y = self.residing_square.y_coor + i * y_dir
+            new_x = self.residing_square.x_coor + i * x_dir
+            if new_y not in range(8) or new_x not in range(8):
+                continue
+            self.possible_moves[new_y][new_x] = True
+            if squares[new_y][new_x].occupying_piece:
+                break
+
 
 
 class King(Piece):
@@ -180,14 +230,26 @@ class King(Piece):
             pygame.image.load('images/king_black.png'), 
             (width, height)
         )
-        self.moves = [
-            (1, 0), (-1, 0), (0, 1), (0, -1), 
-             (1, 1), (-1, -1), (-1, 1), (1, -1)
-        ]
         super().__init__(color, surface_w, surface_b)
 
 
-    def get_possible_moves(self):
-        """Gathers all possible moves for the piece and stores them."""
+    def get_possible_moves(self, squares):
+        """Gathers all moves for the piece."""
         self.clear_moves()
-        self.add_moves()
+        self.add_moves_until_blocked(0, 1, squares)
+        self.add_moves_until_blocked(0, -1, squares)
+        self.add_moves_until_blocked(1, 0, squares)
+        self.add_moves_until_blocked(-1, 0, squares)
+        self.add_moves_until_blocked(1, 1, squares)
+        self.add_moves_until_blocked(1, -1, squares)
+        self.add_moves_until_blocked(-1, 1, squares)
+        self.add_moves_until_blocked(-1, -1, squares)
+
+
+    def add_moves_until_blocked(self, y_dir, x_dir, squares):
+        """Adds moves to piece's possible moves if the move is not blocked."""
+        new_y = self.residing_square.y_coor + y_dir
+        new_x = self.residing_square.x_coor + x_dir
+        if new_y not in range(8) or new_x not in range(8):
+            return
+        self.possible_moves[new_y][new_x] = True
