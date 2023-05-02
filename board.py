@@ -318,6 +318,11 @@ class Board:
 
     def promote(self, current_square, clicked_square):
         """Promotes a pawn to a queen."""
+        # Double check that like colors cannot capture.
+        if clicked_square.occupying_piece:
+            if self.current_player.color == clicked_square.occupying_piece.color:
+                self.select_square(clicked_square)
+                return
         if self.is_legal(current_square, clicked_square):
             clicked_square.occupying_piece = Queen(current_square.occupying_piece.color)
             clicked_square.occupying_piece.residing_square = clicked_square

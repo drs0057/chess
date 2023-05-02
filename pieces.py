@@ -43,21 +43,27 @@ class Pawn(Piece):
         self.clear_moves()
         if self.color == 'w':
             self.add_moves_until_blocked(-1, 0, squares)
-            if self.has_moved == False:
-                self.add_moves_until_blocked(-2, 0, squares)
         elif self.color == 'b':
             self.add_moves_until_blocked(1, 0, squares)
-            if self.has_moved == False:
-                self.add_moves_until_blocked(2, 0, squares)
 
 
     def add_moves_until_blocked(self, y_dir, x_dir, squares):
         """Adds moves to piece's possible moves if the move is not blocked."""
-        new_y = self.residing_square.y_coor + y_dir
-        new_x = self.residing_square.x_coor + x_dir
-        if new_y not in range(8) or new_x not in range(8):
-            return
-        self.possible_moves[new_y][new_x] = True
+        if self.has_moved == False:
+            for i in range(1, 3):
+                new_y = self.residing_square.y_coor + y_dir * i
+                new_x = self.residing_square.x_coor + x_dir * i
+                if new_y not in range(8) or new_x not in range(8):
+                    return
+                self.possible_moves[new_y][new_x] = True
+                if squares[new_y][new_x].occupying_piece:
+                    return
+        else:
+            new_y = self.residing_square.y_coor + y_dir
+            new_x = self.residing_square.x_coor + x_dir
+            if new_y not in range(8) or new_x not in range(8):
+                return
+            self.possible_moves[new_y][new_x] = True
 
 
 
