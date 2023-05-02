@@ -53,7 +53,7 @@ class Square:
 class Board:
     """A class representing the board as a whole."""
     def __init__(self, screen):
-        self.init_state = test_state
+        self.init_state = initial_state
         self.squares = None
         self.build_square_objects(screen)
         self.board_square_selected = False
@@ -143,6 +143,7 @@ class Board:
             moving_king.has_moved = True
             king_square1.occupying_piece = None
             king_square2.occupying_piece = moving_king
+            moving_king.residing_square = king_square2
             king_square1.draw()
             king_square2.draw()
 
@@ -152,10 +153,11 @@ class Board:
             moving_rook.has_moved = True
             rook_square1.occupying_piece = None
             rook_square2.occupying_piece = moving_rook
+            moving_rook.residing_square = rook_square2
             rook_square1.draw()
             rook_square2.draw()
 
-            self.end_turn()
+            self.switch_turn()
         
         # Castle to the left
         elif king_square1.x_coor > rook_square1.x_coor:
@@ -172,6 +174,7 @@ class Board:
             moving_king.has_moved = True
             king_square1.occupying_piece = None
             king_square2.occupying_piece = moving_king
+            moving_king.residing_square = king_square2
             king_square1.draw()
             king_square2.draw()
 
@@ -181,10 +184,11 @@ class Board:
             moving_rook.has_moved = True
             rook_square1.occupying_piece = None
             rook_square2.occupying_piece = moving_rook
+            moving_rook.residing_square = rook_square2
             rook_square1.draw()
             rook_square2.draw()
 
-            self.end_turn()
+            self.switch_turn()
 
 
     def deselect_square(self, square):
@@ -194,19 +198,6 @@ class Board:
         square.display_color = square.color
         square.draw()
         self.board_square_selected = False
-
-    
-    def end_turn(self):
-        """Ends the turn of the current player."""
-
-        # Deselect the previous square
-        self.deselect_square(self.find_selected_square())
-
-        # Refresh possible moves across the whole board
-        self.refresh_possible_board_moves()
-
-        # Switch players
-        self.switch_turn()
 
 
     def find_selected_square(self):
@@ -311,7 +302,7 @@ class Board:
             clicked_square.occupying_piece.residing_square = clicked_square
             current_square.draw()
             clicked_square.draw()
-            self.end_turn()
+            self.switch_turn()
         else:
             self.deselect_square(current_square)
 
@@ -329,7 +320,7 @@ class Board:
             current_square.occupying_piece = None
             current_square.draw()
             clicked_square.draw()
-            self.end_turn()
+            self.switch_turn()
         else:
             self.deselect_square(current_square)
 
@@ -364,13 +355,14 @@ class Board:
 
     def switch_turn(self):
         """Switches turns."""
-
+        # Deselect the previous square
+        self.deselect_square(self.find_selected_square())
+        # Refresh possible moves across the whole board
+        self.refresh_possible_board_moves()
         # Switch players
-        # self.current_player = self.player2 if self.current_player == self.player1 else self.player1
-
+        self.current_player = self.player2 if self.current_player == self.player1 else self.player1
         # Log the current time
         self.current_player.last_time = pygame.time.get_ticks()
-
         # Indicate if first move has occured
         if self.first_move == False:
             self.first_move = True
