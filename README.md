@@ -1,4 +1,4 @@
-This chess game is the final project for Harvard's CS50, an introduction to computer science.
+# Chess
 This game is 100% written in Python and uses the PyGame library to aid in the drawing of objects and the flow of the game.
 
 This project was meant to be an exercise in the practical application of object-oriented programming (OOP) principles.
@@ -23,6 +23,7 @@ Below is a simple diagram that visualizes this hierarchy:
 <div align="center">
   <img src="media/logic_structure" alt="Visual of the logic structure" style="width:50%;">
 </div>
+<br>
 
 This robust structure of objects allows for a fast query of whatever board state is needed. After each move, the board is scanned and each piece updates its list of legal moves. 
 Pieces are handed off seamlessly from square to square, and changes are quickly reflected on the screen as PyGame helps to draw the new changes on the board.
