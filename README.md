@@ -1,4 +1,4 @@
-# Chess
+# Kill The King
 This game is 100% written in Python and uses the PyGame library to aid in the drawing of objects and the flow of the game.
 
 This chess variant plays exactly the same as any other chess game except that in this game, the king must be captured. In a normal game of chess, the king is never actually captured. This is what 'checkmate' means, where the winning player basically stops one move short of actually capturing the king. Moves that expose the king to capture are considered illegal, and thus the king can never be 'hung' like a normal piece can. 
