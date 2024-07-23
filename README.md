@@ -1,6 +1,10 @@
 # Chess
 This game is 100% written in Python and uses the PyGame library to aid in the drawing of objects and the flow of the game.
 
+This chess variant plays exactly the same as any other chess game except that in this game, the king must be captured. In a normal game of chess, the king is never actually captured. This is what 'checkmate' means, where the winning player basically stops one move short of actually capturing the king. Moves that expose the king to capture are considered illegal, and thus the king can never be 'hung' like a normal piece can. 
+
+In this 'Kill The King' variant, any move that exposes the king is legal. If the opponent is quick enough to notice your mistake and capture your king, the game is over. To win the game, checkmate is not sufficient, the attacking player must physically capture the king in order to win. This tends to play like a normal game of chess. In time scrambles, however, this is where the variant shines. Players will accidentally hang their king, and attacking players will achieve checkmate but fail to capture the king. This creates an interesting dynamic that is not normally encountered in a game of chess.
+
 This project was meant to be an exercise in the practical application of object-oriented programming (OOP) principles.
 OOP concepts like polymorphism, encapsulation, and inheritance served as the backbone for this project.
 Below is a brief demo of the game in action:
